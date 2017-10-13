@@ -19,7 +19,7 @@ class Naive_TS_Similarity(object):
     '''
     def DTW(a, b, print_detail=True):
      '''
-    接收参数：两个等长的时间序列，以及是否打印详情
+    接收参数：两个时间序列，以及是否打印详情
     返回结果：它们之间的DTW距离
     '''
     def z_normalization(a):
