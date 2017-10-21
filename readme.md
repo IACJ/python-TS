@@ -28,3 +28,5 @@ class Naive_TS_Similarity(object):
     返回结果：正态化后的时间序列，旧均值，旧方差
     '''
 ~~~ 
+
+## GA
