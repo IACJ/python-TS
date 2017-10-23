@@ -29,4 +29,56 @@ class Naive_TS_Similarity(object):
     '''
 ~~~ 
 
-## GA
+## GA - 遗传算法
+
+![GA流程图](./img/GA.png)
+
+参数要求：
+
+1. popSize - 基因型数量
+2. maxGens - 最大迭代次数 
+3. varBound - list of tuple, 各变量的取值范围
+4. pXover - 交配概率
+5. pMutation - 变异概率
+6. report_detail - 是否打印详情
+
+Outline:
+~~~python
+class GT(object):
+    'GenoType，基因型'
+    def __init__(self,nVars,varBound):
+        '根据数值范围随机初始化各个基因'          
+    def copy(self):
+        '深复制函数'
+
+class GA(object):
+    'Genetic Algorithm, 遗传算法'
+    def __init__(self, popSize=100, maxGens=500,\
+                 varBound=None,pXover=0.7,pMutation=0.07,report_detail=False):
+        '传入参数，初始化'
+    def describe(self):
+        '返回自身信息'      
+    def run(self):
+        'GA的运行入口, return bestGT'
+    def initialize(self):
+        '初始化'     
+    def evaluate(self):
+        '评估fitness'  
+    def keep_the_best(self):
+        '保存最优GT'       
+    def select(self):
+        '选择算子--轮盘赌' 
+    def crossover(self):
+        '交配算子'  
+    def Xover(self,GT1,GT2):
+        '基因交配'       
+    def mutate(self):
+        '基因变异'   
+    def report(self):
+        '打印详情'
+    def elitist(self):
+        '每代保留最优，取代最差'
+~~~
+
+      
+      
