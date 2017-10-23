@@ -13,8 +13,9 @@ import time
 import pandas as pd
 
 class GT(object):
-    'GenoType'
+    'GenoType，基因型'
     def __init__(self,nVars,varBound):
+        '根据数值范围随机初始化各个基因'
         self.nVars = nVars
         self.varBound = varBound
         self.fitness = 0
@@ -25,8 +26,8 @@ class GT(object):
             self.upper[i], self.lower[i] = self.varBound[i]
             self.gene[i] = (self.upper[i]-self.lower[i])*random.random() +self.lower[i]
             
-    
     def copy(self):
+        '深复制函数'
         copy = GT(self.nVars,self.varBound)
         copy.fitness = self.fitness
         copy.gene = self.gene.copy()
@@ -35,15 +36,14 @@ class GT(object):
       
 
 class GA(object):
-    'Genetic Algorithm'
+    'Genetic Algorithm, 遗传算法'
     def __init__(self, popSize=100, maxGens=500,\
                  varBound=None,pXover=0.7,pMutation=0.07,report_detail=False):
-    
         if varBound==None:
             print("varBound is required")
             assert(varBound!=None)
 
-        self.popSize = popSize;
+        self.popSize = popSize
         self.maxGens = maxGens
         self.nVars = len(varBound)
         self.varBound = varBound
@@ -58,6 +58,7 @@ class GA(object):
         print("report_detail:",self.report_detail)
         
     def run(self):
+        'GA的运行入口'
         self.generation=0
         self.initialize()
         self.evaluate()
@@ -88,21 +89,17 @@ class GA(object):
     def keep_the_best(self):
         '保存最优GT'
         for i in self.population:
-            #print(i.fitness,self.population[4].fitness)
             if i.fitness > self.bestGT.fitness:
-               # print(i.fitness,self.bestGT.fitness)
                 self.bestGT = i.copy()
                 
         
     
     def select(self):
         '选择算子--轮盘赌'
-        
         f_sum = 0
         t_fitness = np.zeros(self.popSize) # true fitness
         r_fitness = np.zeros(self.popSize) # relative fitness
-        c_fitness = np.zeros(self.popSize) # cumulative fitness
-        
+        c_fitness = np.zeros(self.popSize) # cumulative fitness  
         for i,j in enumerate(self.population):
             t_fitness[i] = j.fitness
         
@@ -112,20 +109,19 @@ class GA(object):
         
         newPopulation = []
         for i in range(self.popSize):
-            p = random.random();
+            p = random.random()
             for j in range(self.popSize):
                 if (p < c_fitness[j]) :
                     newPopulation.append(self.population[j].copy())
-                    break
-                
-        self.population = newPopulation;
+                    break       
+        self.population = newPopulation
 
     
     def crossover(self):
+        '交配算子'
         mem = 0
         first = 0
-        one = 0
-        
+        one = 0   
         for i in range(self.popSize):
             p = random.random()
             if p < self.pXover :
@@ -136,18 +132,18 @@ class GA(object):
                     one = i
     
     def Xover(self,GT1,GT2):
+        '基因交配'
         if (self.nVars ==2):
-            point = 1;
+            point = 1
         else:
-            point = random.randrange(1,self.nVars);
-            
+            point = random.randrange(1,self.nVars); 
         for i in range(point):
             self.population[GT1].gene[i],self.population[GT2].gene[i] = \
                 self.population[GT2].gene[i],self.population[GT1].gene[i]
         
     
     def mutate(self):
-        
+        '基因变异'
         for i in range(self.popSize):
             for j in range(self.nVars):
                 p = random.random()
@@ -156,11 +152,12 @@ class GA(object):
                     (self.population[i].upper[j]-self.population[i].lower[j])*random.random() +self.population[i].lower[j]
     
     def report(self):
+        '打印详情'
         if (self.report_detail) :
             print(self.generation,':',self.bestGT.fitness)
     
     def elitist(self):
-        
+        '每代保留最优，取代最差'
         t_fitness = np.zeros(self.popSize) # true fitness
         for i,j in enumerate(self.population):
             t_fitness[i] = j.fitness
@@ -178,15 +175,21 @@ if __name__ == '__main__':
     df = pd.DataFrame(result,index=np.arange(0.01,0.1,0.01),columns=np.arange(0.1,1.0,0.1))
     
     for pMutation in np.arange(0.01,0.1,0.01):
-        print(pMutation)    
         for pXover in np.arange(0.1,1.0,0.1):
-            myGA = GA(varBound=varBound,pXover=pXover,pMutation=pMutation)
-            bestGT = myGA.run()
-            df.at[pMutation,pXover] = bestGT.fitness
-            print ('pMutation',pMutation,'pXover',pXover,'bestGT.fitness',bestGT.fitness)
+            print(pMutation,pXover)    
+            temp_sum = 0
+            for i in range(10):   
+                myGA = GA(varBound=varBound,pXover=pXover,pMutation=pMutation)
+                bestGT = myGA.run()
+                temp_sum += bestGT.fitness
+                print(bestGT.fitness)
+            temp_sum /= 10                 
+            df.at[pMutation,pXover] = temp_sum
+            print ('pMutation',pMutation,'pXover',pXover,'bestGT.fitness',temp_sum)
     
     df.plot()
-    df.to_csv('result.csv')
+    df.T.plot()
+    df.to_csv('result2.csv')
     etime = time.time()
     print(etime - btime )
     print ('END.')
