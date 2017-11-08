@@ -81,4 +81,8 @@ class GA(object):
 ~~~
 
       
-      
+## dtw_module
+DTW (Dynamic Time Warping) python module  
+* Author: Pierre Rouanet
+* Home Page: https://github.com/pierre-rouanet/dtw
+* python -m pip install dtw     
